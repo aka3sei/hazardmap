@@ -4,16 +4,19 @@ import urllib.parse
 # 1. ページ構成
 st.set_page_config(page_title="物件安全調査（ハザードマップ）", layout="wide", initial_sidebar_state="collapsed")
 
-# デザイン調整
+# デザイン調整（3本線とヘッダーを完全に消す設定を追加）
 st.markdown("""
     <style>
-    /* サイドバーとヘッダーを非表示 */
-    [data-testid="stSidebar"] { display: none; }
-    header[data-testid="stHeader"] { visibility: hidden; }
-    .block-container { padding-top: 2rem; }
+    /* 3本線メニュー(MainMenu)と上部ヘッダーを非表示 */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* 余白の調整 */
+    .block-container { padding-top: 1rem; }
     
     .main-header { 
-        color: #d32f2f; /* 警告・安全を意識した色 */
+        color: #d32f2f; 
         font-size: 28px; 
         font-weight: bold; 
         border-bottom: 3px solid #d32f2f; 
@@ -24,9 +27,6 @@ st.markdown("""
         border-radius: 10px; 
         border: 2px solid #ddd; 
         box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-    }
-    .stTextInput > div > div > input {
-        background-color: #fffaf0;
     }
     </style>
 """, unsafe_allow_html=True)
