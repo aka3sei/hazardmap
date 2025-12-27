@@ -1,46 +1,53 @@
 import streamlit as st
 
-# 1. ページ構成
-st.set_page_config(page_title="物件安全調査（ハザードマップ）", layout="wide")
+# 1. ページ構成（paddingを0にして余白を極限まで削ります）
+st.set_page_config(page_title="物件安全調査", layout="wide")
 
-# 3本線・メニュー・ヘッダーを完全に消すCSS
+# CSSで高さを固定し、3本線・ヘッダー・フッターを隠す
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    .block-container { padding-top: 0rem; padding-bottom: 0rem; }
     
-    /* アプリ全体の背景を調整 */
+    /* 画面全体の余白をゼロにする */
+    .block-container { 
+        padding-top: 0rem; 
+        padding-bottom: 0rem; 
+        padding-left: 0rem; 
+        padding-right: 0rem; 
+    }
+    
+    /* アプリ全体の背景 */
     .stApp { background-color: #ffffff; }
     
+    /* ヘッダーの調整 */
     .main-header { 
         color: #d32f2f; 
-        font-size: 24px; 
+        font-size: 20px; 
         font-weight: bold; 
-        padding: 15px;
+        padding: 10px 20px;
         background-color: #fff;
-        border-bottom: 2px solid #d32f2f;
+        border-bottom: 1px solid #ddd;
     }
-    iframe { 
-        border: none; 
+    
+    /* iframeの高さを画面の高さに合わせる */
+    .map-container iframe {
         width: 100%;
-        height: calc(100vh - 80px); /* 画面いっぱいに表示 */
+        height: 90vh; /* 画面高の90%を使用 */
+        border: none;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# タイトル（営業時に分かりやすくするため最小限のヘッダーを残しています）
+# 最小限のタイトル
 st.markdown('<div class="main-header">🛡️ 物件安全調査（ハザードマップポータル）</div>', unsafe_allow_html=True)
 
-# 国交省ハザードマップポータルのトップページ（「重ねるハザードマップ」）
-# このURLは、最初に「住所から探す」「現在地から探す」の選択肢が出る画面です。
+# 国交省ハザードマップポータルの埋め込み
+# heightを明示的に大きく指定（1000px）し、CSS側でも制御します
 hazard_portal_url = "https://disaportal.gsi.go.jp/maps/index.html?number=disaster1"
 
-# ハザードマップポータルを埋め込み表示
-# st.components.v1.iframe を使い、画面全体をマップにします
-st.components.v1.iframe(hazard_portal_url, scrolling=True)
+st.components.v1.iframe(hazard_portal_url, height=1000, scrolling=True)
 
-# 補足：全画面で開くためのボタンをページ下部に小さく配置
-st.markdown("---")
-st.link_button("🌐 ブラウザの全画面で開く（国交省サイト）", hazard_portal_url, use_container_width=True)
+# 予備のリンクボタン（モバイルで見切れる場合用）
+st.link_button("🌐 全画面で開く（国交省サイトへ）", hazard_portal_url, use_container_width=True)
