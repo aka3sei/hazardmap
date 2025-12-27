@@ -1,67 +1,46 @@
 import streamlit as st
-import urllib.parse
 
 # 1. ページ構成
-st.set_page_config(page_title="物件安全調査", layout="wide")
+st.set_page_config(page_title="物件安全調査（ハザードマップ）", layout="wide")
 
-# 3本線・ヘッダー・フッターを完全に消すCSS
+# 3本線・メニュー・ヘッダーを完全に消すCSS
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    .block-container { padding-top: 1rem; }
+    .block-container { padding-top: 0rem; padding-bottom: 0rem; }
+    
+    /* アプリ全体の背景を調整 */
+    .stApp { background-color: #ffffff; }
+    
     .main-header { 
         color: #d32f2f; 
-        font-size: 26px; 
+        font-size: 24px; 
         font-weight: bold; 
-        border-bottom: 3px solid #d32f2f; 
-        padding-bottom: 10px;
-        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #fff;
+        border-bottom: 2px solid #d32f2f;
     }
-    .hazard-box {
-        background-color: #fff5f5;
-        border: 2px solid #d32f2f;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        margin-top: 20px;
+    iframe { 
+        border: none; 
+        width: 100%;
+        height: calc(100vh - 80px); /* 画面いっぱいに表示 */
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-header">🛡️ 物件安全調査（ハザードマップ）</div>', unsafe_allow_html=True)
+# タイトル（営業時に分かりやすくするため最小限のヘッダーを残しています）
+st.markdown('<div class="main-header">🛡️ 物件安全調査（ハザードマップポータル）</div>', unsafe_allow_html=True)
 
-# ① 住所入力
-address = st.text_input("物件の住所を入力してください", placeholder="例：東京都三鷹市大沢２丁目")
+# 国交省ハザードマップポータルのトップページ（「重ねるハザードマップ」）
+# このURLは、最初に「住所から探す」「現在地から探す」の選択肢が出る画面です。
+hazard_portal_url = "https://disaportal.gsi.go.jp/maps/index.html?number=disaster1"
 
-if not address:
-    st.info("💡 住所を入力してください。")
-else:
-    # エンコード
-    encoded_address = urllib.parse.quote(address)
-    
-    # 国交省の検索済みURL
-    hazard_url = f"https://disaportal.gsi.go.jp/maps/?address={encoded_address}#base=pale&ls=seamless%7Cborder%7Cdisaster1&disp=111&lcd=seamless&vs=c1j0l0u0f0&z=16"
-    
-    st.markdown(f"### 📍 調査地点：{address}")
+# ハザードマップポータルを埋め込み表示
+# st.components.v1.iframe を使い、画面全体をマップにします
+st.components.v1.iframe(hazard_portal_url, scrolling=True)
 
-    # 確実に動作させるための「2段階」表示
-    st.markdown(f"""
-    <div class="hazard-box">
-        <h4>✅ 住所が特定されました</h4>
-        <p>国交省ハザードマップで <strong>{address}</strong> のリスクを表示します。</p>
-        <p style="font-size: 0.9em; color: #666;">※iframe制限回避のため、以下のボタンより公式マップを直接展開してください。</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ボタンを大きく表示
-    st.link_button(f"🚩 {address} のハザードマップを表示（別タブで開く）", hazard_url, use_container_width=True)
-
-    # 補助的にGoogleマップを表示（場所の確認用）
-    st.markdown("---")
-    st.caption("地点確認用マップ")
-    google_map_url = f"https://www.google.com/maps?q={encoded_address}&output=embed&z=16"
-    st.components.v1.iframe(google_map_url, height=400)
-
-    st.success("✅ 準備が整いました。上の赤いボタンを押してハザード情報を確認してください。")
+# 補足：全画面で開くためのボタンをページ下部に小さく配置
+st.markdown("---")
+st.link_button("🌐 ブラウザの全画面で開く（国交省サイト）", hazard_portal_url, use_container_width=True)
